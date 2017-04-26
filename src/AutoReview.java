@@ -59,22 +59,11 @@ public class AutoReview {
 			} else {
 				user = s.substring(userIndex + 5); 
 			}
-			String attack_type = ""; 
-			if (s.contains("sshd")) {
-				attack_type = "sshd"; 
-			} else if (s.contains("sudo")) {
-				attack_type = "sudo"; 
-			} else if (s.contains("su")) {
-				attack_type = "su"; 
-			} else {
-				System.out.println("clause doesn't contain attak type; skipping"); 
-				continue; 
-			}
 			if (!(date_map.containsKey(time))) {
 				date_map.put(time, date_base); 
 				date_base++; 
 			}
-			AttackInfo newInfo = new AttackInfo(user, time, attack_type); 
+			AttackInfo newInfo = new AttackInfo(user, time); 
 			if (map.containsKey(newInfo)) {
 				map.put(newInfo, map.get(newInfo) + 1); 
 			} else {
@@ -88,21 +77,22 @@ public class AutoReview {
 				all_attacks.add(ai); 
 			}
 		}
-		
-		Collections.sort(all_attacks, new Comparator<AttackInfo>() {
-			@Override
-			public int compare(AttackInfo o1, AttackInfo o2) {
-				if (!date_map.containsKey(o1.time)) {
-					System.out.println("comparator can't find time " + o1.time); 
-					return 0; 
-				} else if (!date_map.containsKey(o2.time)) {
-					System.out.println("comparator can't find time " + o2.time); 
-					return 0; 
-				} else {
-					return date_map.get(o1.time).compareTo(date_map.get(o2.time)); 
-				}
-			}		
-		});
+
+		// sort the attacks by date 
+//		Collections.sort(all_attacks, new Comparator<AttackInfo>() {
+//			@Override
+//			public int compare(AttackInfo o1, AttackInfo o2) {
+//				if (!date_map.containsKey(o1.time)) {
+//					System.out.println("comparator can't find time " + o1.time); 
+//					return 0; 
+//				} else if (!date_map.containsKey(o2.time)) {
+//					System.out.println("comparator can't find time " + o2.time); 
+//					return 0; 
+//				} else {
+//					return date_map.get(o1.time).compareTo(date_map.get(o2.time)); 
+//				}
+//			}		
+//		});
 		
 		DateFormat dtf = new SimpleDateFormat("MM dd HH:mm:ss"); 
 		Calendar cal = Calendar.getInstance(); 
@@ -116,7 +106,7 @@ public class AutoReview {
 			for (int i = 0; i < all_attacks.size(); i++) {
 				AttackInfo ai = all_attacks.get(i); 
 				System.out.print(ai.time +  " user " + all_attacks.get(i).user 
-						+ " experienced " + map.get(ai) + " " + ai.attack_type + " attacks");
+						+ " experienced " + map.get(ai) + " attacks");
 				if (i != all_attacks.size() - 1) {
 					System.out.print("; "); 
 				} else {
@@ -161,12 +151,10 @@ public class AutoReview {
 class AttackInfo {
 	String user; 
 	String time; 
-	String attack_type; 
 	
-	public AttackInfo(String u, String t, String a) {
+	public AttackInfo(String u, String t) {
 		user = u; 
 		time = t; 
-		attack_type = a; 
 	}
 	
 	@Override 
@@ -174,13 +162,12 @@ class AttackInfo {
 		if (o == this) return true; 
 		if (!(o instanceof AttackInfo)) return false; 
 		AttackInfo obj = (AttackInfo) o; 
-		return obj.user.equals(user) && obj.time.equals(time) 
-				&& obj.attack_type.equals(attack_type); 
+		return obj.user.equals(user) && obj.time.equals(time); 
 	}
 	
 	@Override
 	public int hashCode() {
-		String concat = user + ";" + time + ";" + attack_type; 
+		String concat = user + ";" + time; 
 		return concat.hashCode(); 
 	}
 	
