@@ -13,7 +13,7 @@ import java.util.*;
 public class AutoReview {
 
 	private static String path = "";
-	private static int BOUND = 1; 
+	private static int BOUND = 10; 
 	private static ArrayList<String> logStrings = new ArrayList<String>();
 	private static HashMap<AttackInfo, Integer> map = 
 			new HashMap<AttackInfo, Integer>(); 
